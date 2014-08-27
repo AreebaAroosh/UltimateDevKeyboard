@@ -7,7 +7,7 @@ namespace CR_XkeysEngine
 {
   public class XkeySelection
   {
-    List<XkeyBase> selectedKeys = new List<XkeyBase>();
+    List<KeyBase> selectedKeys = new List<KeyBase>();
     public XkeySelection()
     {
 
@@ -16,9 +16,9 @@ namespace CR_XkeysEngine
     public bool IsBlocked()
     {
       int blockedKeys = 0;
-      foreach (XkeyBase key in selectedKeys)
+      foreach (KeyBase key in selectedKeys)
       {
-        Xkey xkey = key as Xkey;
+        Key xkey = key as Key;
         if (xkey != null)
           if (xkey.IsBlocked)
             blockedKeys++;
@@ -28,10 +28,18 @@ namespace CR_XkeysEngine
       return blockedKeys > 0;
     }
 
+    public bool AllKeysRepeatIfHeldDown()
+    {
+      foreach (KeyBase key in selectedKeys)
+        if (!key.Repeating)
+          return false;
+      return true;
+    }
+
     public bool HasOnlySingleKeys()
     {
-      foreach (XkeyBase key in selectedKeys)
-        if (key is XkeyGroup)
+      foreach (KeyBase key in selectedKeys)
+        if (key is KeyGroup)
           return false;
       return true;
     }
@@ -43,13 +51,13 @@ namespace CR_XkeysEngine
 
       // Two keys selected....
 
-      if (GetGroupType() != XKeysGroupType.NoGroup)
+      if (GetGroupType() != KeyGroupType.NoGroup)
         return false;
 
       // Both keys can be grouped...
 
-      XkeyBase key1 = selectedKeys[0];
-      XkeyBase key2 = selectedKeys[1];
+      KeyBase key1 = selectedKeys[0];
+      KeyBase key2 = selectedKeys[1];
 
       if (key1.Column != key2.Column)
         return false;
@@ -76,13 +84,13 @@ namespace CR_XkeysEngine
 
       // Two keys selected....
 
-      if (GetGroupType() != XKeysGroupType.NoGroup)
+      if (GetGroupType() != KeyGroupType.NoGroup)
         return false;
 
       // Both keys can be grouped...
 
-      XkeyBase key1 = selectedKeys[0];
-      XkeyBase key2 = selectedKeys[1];
+      KeyBase key1 = selectedKeys[0];
+      KeyBase key2 = selectedKeys[1];
 
       if (key1.Row != key2.Row)
         return false;
@@ -112,12 +120,7 @@ namespace CR_XkeysEngine
       return true;
     }
 
-    static bool HasHigherValue(int constraint, int matchValue)
-    {
-      return matchValue != -1 && matchValue == constraint;
-    }
-
-    private int GetSmallestValueKeyIndex(XkeyBase[] keys, Func<int, int> getValue)
+    private int GetSmallestValueKeyIndex(KeyBase[] keys, Func<int, int> getValue)
     {
       int index = -1;
       int lowestValue = -1;
@@ -135,30 +138,30 @@ namespace CR_XkeysEngine
     }
 
    
-    int GetTopKeyIndex(XkeyBase[] keys)
+    int GetTopKeyIndex(KeyBase[] keys)
     {
       return GetSmallestValueKeyIndex(keys, i => keys[i].Row);
     }
 
-    int GetLeftKeyIndex(XkeyBase[] keys)
+    int GetLeftKeyIndex(KeyBase[] keys)
     {
       return GetSmallestValueKeyIndex(keys, i => keys[i].Column);
     }
 
-    bool HasKeyAt(XkeyBase[] keys, int column, int row)
+    bool HasKeyAt(KeyBase[] keys, int column, int row)
     {
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
         if (key.Column == column && key.Row == row)
           return true;
       return false;
     }
 
-    XkeyBase GetTopLeftKey(XkeyBase[] keys)
+    KeyBase GetTopLeftKey(KeyBase[] keys)
     {
       int topKeyIndex = GetTopKeyIndex(keys);
       int leftKeyIndex = GetLeftKeyIndex(keys);
 
-      XkeyBase topLeftKey = null;
+      KeyBase topLeftKey = null;
 
       int leftColumn = keys[leftKeyIndex].Column;
       int topRow = keys[topKeyIndex].Row;
@@ -176,18 +179,18 @@ namespace CR_XkeysEngine
 
       // Four keys selected....
 
-      if (GetGroupType() != XKeysGroupType.NoGroup)
+      if (GetGroupType() != KeyGroupType.NoGroup)
         return false;
 
       // All four keys can be grouped...
 
-      XkeyBase[] keys = new XkeyBase[4];
+      KeyBase[] keys = new KeyBase[4];
       keys[0] = selectedKeys[0];
       keys[1] = selectedKeys[1];
       keys[2] = selectedKeys[2];
       keys[3] = selectedKeys[3];
 
-      XkeyBase topLeftKey = GetTopLeftKey(keys);
+      KeyBase topLeftKey = GetTopLeftKey(keys);
 
       if (topLeftKey == null)
         return false;
@@ -225,19 +228,19 @@ namespace CR_XkeysEngine
       return compareName;
     }
 
-    public XKeysGroupType GetGroupType()
+    public KeyGroupType GetGroupType()
     {
       if (Count != 1)
-        return XKeysGroupType.NoGroup;
+        return KeyGroupType.NoGroup;
 
-      XkeyGroup xkeyGroup = selectedKeys[0] as XkeyGroup;
+      KeyGroup xkeyGroup = selectedKeys[0] as KeyGroup;
       if (xkeyGroup != null)
         return xkeyGroup.Type;
 
-      return XKeysGroupType.NoGroup;
+      return KeyGroupType.NoGroup;
     }
 
-    public void AddKey(XkeyBase key)
+    public void AddKey(KeyBase key)
     {
       selectedKeys.Add(key);
     }
@@ -250,7 +253,7 @@ namespace CR_XkeysEngine
       }
     }
 
-    public List<XkeyBase> SelectedKeys
+    public List<KeyBase> SelectedKeys
     {
       get
       {

@@ -86,21 +86,22 @@ namespace CR_XkeysEngine
 		private void InitializeComponent()
 		{
       this.tabControl = new DevExpress.DXCore.Controls.XtraTab.XtraTabControl();
+      this.tabCustomInputShortcut = new DevExpress.DXCore.Controls.XtraTab.XtraTabPage();
       this.edCustomInput = new CR_XkeysEngine.XkeysEditControl();
       this.tabFolder = new DevExpress.DXCore.Controls.XtraTab.XtraTabPage();
       this.edFolderName = new DevExpress.DXCore.Controls.XtraEditors.TextEdit();
       this.label1 = new System.Windows.Forms.Label();
-      this.tabCustomInputShortcut = new DevExpress.DXCore.Controls.XtraTab.XtraTabPage();
       this.tabCommand = new DevExpress.DXCore.Controls.XtraTab.XtraTabPage();
       this.cmbCommands = new DevExpress.DXCore.Controls.XtraEditors.ComboBoxEdit();
       this.label2 = new System.Windows.Forms.Label();
       this.btnFindNext = new DevExpress.DXCore.Controls.XtraEditors.SimpleButton();
       this.btnFind = new DevExpress.DXCore.Controls.XtraEditors.SimpleButton();
+      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.tabControl)).BeginInit();
       this.tabControl.SuspendLayout();
+      this.tabCustomInputShortcut.SuspendLayout();
       this.tabFolder.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.edFolderName.Properties)).BeginInit();
-      this.tabCustomInputShortcut.SuspendLayout();
       this.tabCommand.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.cmbCommands.Properties)).BeginInit();
       this.SuspendLayout();
@@ -111,14 +112,31 @@ namespace CR_XkeysEngine
       this.tabControl.Margin = new System.Windows.Forms.Padding(0);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedTabPage = this.tabCustomInputShortcut;
-      this.tabControl.Size = new System.Drawing.Size(316, 164);
+      this.tabControl.Size = new System.Drawing.Size(316, 217);
       this.tabControl.TabIndex = 0;
       this.tabControl.TabPages.AddRange(new DevExpress.DXCore.Controls.XtraTab.XtraTabPage[] {
             this.tabFolder,
             this.tabCustomInputShortcut,
             this.tabCommand});
-      
-      
+      // 
+      // tabCustomInputShortcut
+      // 
+      this.tabCustomInputShortcut.Controls.Add(this.edCustomInput);
+      this.tabCustomInputShortcut.Name = "tabCustomInputShortcut";
+      this.tabCustomInputShortcut.Size = new System.Drawing.Size(314, 192);
+      this.tabCustomInputShortcut.Text = "X-keys";
+      // 
+      // edCustomInput
+      // 
+      this.edCustomInput.AltKeyDown = false;
+      this.edCustomInput.AnyShiftModifier = false;
+      this.edCustomInput.CtrlKeyDown = false;
+      this.edCustomInput.Location = new System.Drawing.Point(8, 9);
+      this.edCustomInput.Name = "edCustomInput";
+      this.edCustomInput.ShiftKeyDown = false;
+      this.edCustomInput.Size = new System.Drawing.Size(288, 180);
+      this.edCustomInput.TabIndex = 17;
+      this.edCustomInput.CustomInputChanged += new CR_XkeysEngine.CustomInputChangedEventHandler(this.edCustomInput_CustomInputChanged);
       // 
       // tabFolder
       // 
@@ -126,15 +144,15 @@ namespace CR_XkeysEngine
       this.tabFolder.Controls.Add(this.label1);
       this.tabFolder.Margin = new System.Windows.Forms.Padding(0);
       this.tabFolder.Name = "tabFolder";
-      this.tabFolder.Size = new System.Drawing.Size(314, 139);
+      this.tabFolder.Size = new System.Drawing.Size(314, 192);
       this.tabFolder.Text = "Folder";
       // 
       // edFolderName
       // 
       this.edFolderName.EditValue = "";
-      this.edFolderName.Location = new System.Drawing.Point(104, 13);
+      this.edFolderName.Location = new System.Drawing.Point(84, 16);
       this.edFolderName.Name = "edFolderName";
-      this.edFolderName.Size = new System.Drawing.Size(188, 20);
+      this.edFolderName.Size = new System.Drawing.Size(213, 20);
       this.edFolderName.TabIndex = 1;
       // 
       // label1
@@ -146,27 +164,12 @@ namespace CR_XkeysEngine
       this.label1.Text = "Folder name";
       this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // tabMouseShortcut
-      // 
-      this.tabCustomInputShortcut.Controls.Add(this.edCustomInput);
-      this.tabCustomInputShortcut.Name = "tabCustomInputShortcut";
-      this.tabCustomInputShortcut.Size = new System.Drawing.Size(314, 139);
-      this.tabCustomInputShortcut.Text = "X-keys";
-      // 
-      // edCustomInput
-      // 
-      this.edCustomInput.Location = new System.Drawing.Point(8, 9);
-      this.edCustomInput.Name = "edCustomInput";
-      this.edCustomInput.Size = new System.Drawing.Size(288, 86);
-      this.edCustomInput.TabIndex = 17;
-      this.edCustomInput.CustomInputChanged += new CR_XkeysEngine.CustomInputChangedEventHandler(this.edCustomInput_CustomInputChanged);
-      // 
       // tabCommand
       // 
       this.tabCommand.Controls.Add(this.cmbCommands);
       this.tabCommand.Controls.Add(this.label2);
       this.tabCommand.Name = "tabCommand";
-      this.tabCommand.Size = new System.Drawing.Size(314, 139);
+      this.tabCommand.Size = new System.Drawing.Size(314, 192);
       this.tabCommand.Text = "Command";
       // 
       // cmbCommands
@@ -197,7 +200,7 @@ namespace CR_XkeysEngine
       this.btnFindNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btnFindNext.ImageIndex = 387;
       this.btnFindNext.ImageList = this.Images16x16;
-      this.btnFindNext.Location = new System.Drawing.Point(211, 132);
+      this.btnFindNext.Location = new System.Drawing.Point(211, 220);
       this.btnFindNext.Name = "btnFindNext";
       this.btnFindNext.Size = new System.Drawing.Size(88, 25);
       this.btnFindNext.TabIndex = 2;
@@ -209,7 +212,7 @@ namespace CR_XkeysEngine
       this.btnFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btnFind.ImageIndex = 388;
       this.btnFind.ImageList = this.Images16x16;
-      this.btnFind.Location = new System.Drawing.Point(139, 132);
+      this.btnFind.Location = new System.Drawing.Point(139, 220);
       this.btnFind.Name = "btnFind";
       this.btnFind.Size = new System.Drawing.Size(68, 25);
       this.btnFind.TabIndex = 3;
@@ -219,7 +222,7 @@ namespace CR_XkeysEngine
       // frmFind
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
-      this.ClientSize = new System.Drawing.Size(306, 163);
+      this.ClientSize = new System.Drawing.Size(306, 251);
       this.Controls.Add(this.btnFind);
       this.Controls.Add(this.btnFindNext);
       this.Controls.Add(this.tabControl);
@@ -232,11 +235,12 @@ namespace CR_XkeysEngine
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Find";
       this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmFind_KeyDown);
+      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.tabControl)).EndInit();
       this.tabControl.ResumeLayout(false);
+      this.tabCustomInputShortcut.ResumeLayout(false);
       this.tabFolder.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.edFolderName.Properties)).EndInit();
-      this.tabCustomInputShortcut.ResumeLayout(false);
       this.tabCommand.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.cmbCommands.Properties)).EndInit();
       this.ResumeLayout(false);

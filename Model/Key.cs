@@ -5,15 +5,10 @@ using DevExpress.CodeRush.Core;
 
 namespace CR_XkeysEngine
 {
-  /* Need to figure out:
- *  Method implementation for grouping operations (Wide, Tall, Square)
- */
-
-  
-  public class Xkey : XkeyBase
+  public class Key : KeyBase
   {
     public bool IsBlocked { get; set; }
-    public Xkey()
+    public Key()
     {
 
     }

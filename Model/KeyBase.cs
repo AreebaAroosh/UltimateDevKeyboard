@@ -5,7 +5,7 @@ using DevExpress.CodeRush.Core;
 
 namespace CR_XkeysEngine
 {
-  public class XkeyBase
+  public class KeyBase
   {
     int column;
     int row;
@@ -22,19 +22,20 @@ namespace CR_XkeysEngine
       return false;
     }
 
-    public static XkeyBase CreateAndLoad(DecoupledStorage storage, string section, int index)
+    public static KeyBase CreateAndLoad(DecoupledStorage storage, string section, int index)
     {
-      XkeyBase key = null;
+      KeyBase key = null;
       if (storage.ReadBoolean(section, "IsGroup" + index, false))
-        key = new XkeyGroup();
+        key = new KeyGroup();
       else
-        key = new Xkey();
+        key = new Key();
       key.Load(storage, section, index);
       return key;
     }
 
+    // TODO: Move GetRowDataValue out to the hardware interface so the files in the Model folder are hardware-independent.
     /// <summary>
-    /// Returns the column value to match the Xkeys row data value if this key were down.
+    /// Returns the column value to match the key row data value if this key were down.
     /// </summary>
     public virtual byte GetRowDataValue()
     {
@@ -45,8 +46,11 @@ namespace CR_XkeysEngine
     {
       if (Name != null)
         storage.WriteString(section, "Name" + index, Name);
+      else
+        storage.WriteString(section, "Name" + index, string.Empty);
       storage.WriteInt32(section, "Column" + index, column);
-      storage.WriteInt32(section, "Row" + index, row);      
+      storage.WriteInt32(section, "Row" + index, row);
+      storage.WriteBoolean(section, "Repeating" + index, Repeating);
     }
 
     public virtual void Load(DecoupledStorage storage, string section, int index)
@@ -54,6 +58,7 @@ namespace CR_XkeysEngine
       Name = storage.ReadString(section, "Name" + index);
       column = storage.ReadInt32(section, "Column" + index);
       row = storage.ReadInt32(section, "Row" + index);
+      Repeating = storage.ReadBoolean(section, "Repeating" + index);
     }
 
     public bool IsSelected(int column, int row)
@@ -65,6 +70,11 @@ namespace CR_XkeysEngine
     {
       if (IsAt(column, row))
         Selected = true;
+    }
+
+    public void SetRepeat(bool shouldRepeat)
+    {
+      Repeating = shouldRepeat;      
     }
 
     public virtual void ToggleSelection(int column, int row)
@@ -102,7 +112,7 @@ namespace CR_XkeysEngine
     {
       get
       {
-        return XkeysRaw.Data.IsKeyDown(column, row);
+        return Hardware.Keyboard.IsDown(column, row);
       }
     }
 
@@ -115,5 +125,6 @@ namespace CR_XkeysEngine
     }
     
     public bool Selected { get; set; }
+    public bool Repeating { get; set; }
   }
 }

@@ -8,7 +8,6 @@ namespace CR_XkeysEngine
   public class XkeysDataHandler : PIEDataHandler
   {
     #region private fields...
-    XkeysPainter xkeysPainter = new XkeysPainter();
     readonly byte[] lastKeyCode = new byte[Hardware.Keyboard.NumColumns];
     readonly byte[] blockedKeysMask = new byte[Hardware.Keyboard.NumColumns];
     readonly byte[] simpleKeyCode = new byte[Hardware.Keyboard.NumColumns];    // With blocked keys removed.
@@ -58,6 +57,18 @@ namespace CR_XkeysEngine
     }
     #endregion
 
+    #region ProcessData
+    void ProcessData(byte[] readData)
+    {
+      if (readData[0] == 2)
+      {
+        CheckSwitchPosition(readData);
+        ReadUnitID(readData);
+      }
+
+      GetKeyData(readData);
+    }
+    #endregion
     #region ReadUnitID
     void ReadUnitID(byte[] readData)
     {
@@ -76,6 +87,15 @@ namespace CR_XkeysEngine
     #endregion
 
     // public methods...
+    #region ReadDataOnce
+    public void ReadDataOnce()
+    {
+      byte[] readData = null;
+      if (activeDevice.ReadData(ref readData) == 0)
+        ProcessData(readData);
+    }
+    #endregion
+
     #region HandlePIEHidData
     public void HandlePIEHidData(byte[] data, PIEDevice sourceDevice)
     {
@@ -84,15 +104,7 @@ namespace CR_XkeysEngine
 
       byte[] readData = null;
       while (sourceDevice.ReadData(ref readData) == 0) // Continue to read data as long as we have it.
-      {
-        if (readData[0] == 2)
-        {
-          CheckSwitchPosition(readData);
-          ReadUnitID(readData);
-        }
-
-        GetKeyData(readData);
-      }
+        ProcessData(readData);
     }
     #endregion
     #region SetActiveDevice

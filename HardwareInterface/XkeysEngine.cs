@@ -9,11 +9,11 @@ namespace CR_XkeysEngine
   {
     string lastDataSent;
     DateTime lastTimeSent = DateTime.MinValue;
-    XkeyLayout xkeyLayout;
+    KeyLayout xkeyLayout;
 
     public XkeysEngine()
     {
-      xkeyLayout = new XkeyLayout();
+      xkeyLayout = new KeyLayout();
       xkeyLayout.Load();
       XkeysRaw.Data.DataChanged += Data_DataChanged;
     }
@@ -21,7 +21,7 @@ namespace CR_XkeysEngine
     void Data_DataChanged(object sender, EventArgs e)
     {
 
-      List<XkeyBase> keysDown = new List<XkeyBase>();
+      List<KeyBase> keysDown = new List<KeyBase>();
 
       for (int column = 0; column < Hardware.Keyboard.NumColumns; column++)
       {
@@ -34,7 +34,7 @@ namespace CR_XkeysEngine
         for (int row = 0; row < Hardware.Keyboard.NumRows; row++)
           if ((keyCode & (byte)Math.Pow(2, row)) != 0)
           {
-            XkeyBase key = xkeyLayout.GetKey(column, row);
+            KeyBase key = xkeyLayout.GetKey(column, row);
             if (!keysDown.Contains(key))
               keysDown.Add(key);
           }
@@ -45,7 +45,7 @@ namespace CR_XkeysEngine
      */
     }
 
-    protected virtual void OnXkeyPressed(List<XkeyBase> keysDown, string customData)
+    protected virtual void OnXkeyPressed(List<KeyBase> keysDown, string customData)
     {
       if (lastDataSent == customData && DateTime.Now - lastTimeSent < TimeSpan.FromMilliseconds(250))
         return;

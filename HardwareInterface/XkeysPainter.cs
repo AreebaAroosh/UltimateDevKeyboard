@@ -6,7 +6,7 @@ namespace CR_XkeysEngine
 {
   public class XkeysPainter
   {
-    List<XkeyBase> selectedKeys = new List<XkeyBase>();
+    List<KeyBase> selectedKeys = new List<KeyBase>();
 
     static Font[] textFont = new Font[6];
     static XkeysPainter()
@@ -146,18 +146,18 @@ namespace CR_XkeysEngine
       return new Point(point.X - leftMargin, point.Y - topMargin);
     }
 
-    Rectangle GetKeyRect(int columnIndex, int rowIndex, XKeysGroupType keyType)
+    Rectangle GetKeyRect(int columnIndex, int rowIndex, KeyGroupType keyType)
     {
       Point point = AddMargin(GetTopLeft(columnIndex, rowIndex));
       switch (keyType)
       {
-        case XKeysGroupType.NoGroup:
+        case KeyGroupType.NoGroup:
           return new Rectangle(point.X, point.Y, keyWidth, keyHeight);
-        case XKeysGroupType.Tall:
+        case KeyGroupType.Tall:
           return new Rectangle(point.X, point.Y, keyWidth, keyHeight * 2);
-        case XKeysGroupType.Wide:
+        case KeyGroupType.Wide:
           return new Rectangle(point.X, point.Y, keyWidth * 2, keyHeight);
-        case XKeysGroupType.Square:
+        case KeyGroupType.Square:
           return new Rectangle(point.X, point.Y, keyWidth * 2, keyHeight * 2);
         default:
           return new Rectangle(point.X, point.Y, keyWidth, keyHeight);
@@ -174,7 +174,7 @@ namespace CR_XkeysEngine
         graphics.DrawRectangle(borderPen, selectionRect);
     }
 
-    void DrawBlockedKey(Graphics graphics, int columnIndex, int rowIndex, XKeysGroupType keyType, bool isSelected)
+    void DrawBlockedKey(Graphics graphics, int columnIndex, int rowIndex, KeyGroupType keyType, bool isSelected)
     {
       Rectangle keyRect = GetKeyRect(columnIndex, rowIndex, keyType);
       graphics.FillRectangle(Brushes.DimGray, keyRect);
@@ -255,7 +255,7 @@ namespace CR_XkeysEngine
       }
     }
 
-    void DrawFilledKey(Graphics graphics, int columnIndex, int rowIndex, XKeysGroupType keyType, bool isSelected, string keyName, Brush fillBrush)
+    void DrawFilledKey(Graphics graphics, int columnIndex, int rowIndex, KeyGroupType keyType, bool isSelected, string keyName, Brush fillBrush)
     {
       Rectangle keyRect = GetKeyRect(columnIndex, rowIndex, keyType);
       graphics.FillRectangle(fillBrush, keyRect);
@@ -263,7 +263,7 @@ namespace CR_XkeysEngine
       DrawSelectionBorder(graphics, isSelected, keyRect);
     }
 
-    void DrawKeyDown(Graphics graphics, int columnIndex, int rowIndex, XKeysGroupType keyType, bool isSelected, string keyName, bool isFocused)
+    void DrawKeyDown(Graphics graphics, int columnIndex, int rowIndex, KeyGroupType keyType, bool isSelected, string keyName, bool isFocused)
     {
       Brush fillBrush;
       if (isFocused)
@@ -274,12 +274,12 @@ namespace CR_XkeysEngine
       DrawFilledKey(graphics, columnIndex, rowIndex, keyType, isSelected, keyName, fillBrush);
     }
 
-    void DrawSelectedKey(Graphics graphics, int columnIndex, int rowIndex, XKeysGroupType keyType, bool isSelected, string keyName)
+    void DrawSelectedKey(Graphics graphics, int columnIndex, int rowIndex, KeyGroupType keyType, bool isSelected, string keyName)
     {
       DrawFilledKey(graphics, columnIndex, rowIndex, keyType, isSelected, keyName, Brushes.MediumBlue);
     }
 
-    void DrawKeyUp(Graphics graphics, int columnIndex, int rowIndex, XKeysGroupType keyType, bool isSelected, string keyName)
+    void DrawKeyUp(Graphics graphics, int columnIndex, int rowIndex, KeyGroupType keyType, bool isSelected, string keyName)
     {
       Rectangle keyRect = GetKeyRect(columnIndex, rowIndex, keyType);
       graphics.FillRectangle(Brushes.White, keyRect);
@@ -288,16 +288,16 @@ namespace CR_XkeysEngine
       DrawSelectionBorder(graphics, isSelected, keyRect);
     }
 
-    public XkeyLayout GetLayout(Byte[] keyCode, Byte[] blockedKeys)
+    public KeyLayout GetLayout(Byte[] keyCode, Byte[] blockedKeys)
     {
-      XkeyLayout result = new XkeyLayout();
+      KeyLayout result = new KeyLayout();
       for (int columnIndex = 0; columnIndex < keyCode.Length; columnIndex++)
         for (int rowIndex = 0; rowIndex < Hardware.Keyboard.NumRows; rowIndex++)
         {
           int mask = (int)Math.Round(Math.Pow(2, rowIndex));
           if (!Hardware.Keyboard.IsValidKey(columnIndex, rowIndex))
             continue;
-          Xkey xkey = new Xkey();
+          Key xkey = new Key();
           xkey.SetPosition(columnIndex, rowIndex);
 
           int keyCodeMask = keyCode[columnIndex];
@@ -312,7 +312,7 @@ namespace CR_XkeysEngine
       return result;
     }
 
-    void DrawKey(Graphics graphics, int columnIndex, int rowIndex, byte keyCode, int blockedKeyMask, XkeyLayout xkeyLayout, XKeysGroupType keyType, bool isFocused)
+    void DrawKey(Graphics graphics, int columnIndex, int rowIndex, byte keyCode, int blockedKeyMask, KeyLayout xkeyLayout, KeyGroupType keyType, bool isFocused)
     {
       int mask = (int)Math.Round(Math.Pow(2, rowIndex));
       if (Hardware.Keyboard.IsValidKey(columnIndex, rowIndex))
@@ -324,7 +324,7 @@ namespace CR_XkeysEngine
         {
           isSelected = xkeyLayout.IsSelected(columnIndex, rowIndex);
           keyName = xkeyLayout.GetKeyName(columnIndex, rowIndex);
-          Xkey key = xkeyLayout.GetKey(columnIndex, rowIndex) as Xkey;
+          Key key = xkeyLayout.GetKey(columnIndex, rowIndex) as Key;
           if (key != null)
             blockOverride = key.IsBlocked;
         }
@@ -342,7 +342,7 @@ namespace CR_XkeysEngine
           DrawBlockedKey(graphics, columnIndex, rowIndex, keyType, isSelected);
         else
         {
-          foreach (XkeyBase selectedKey in selectedKeys)
+          foreach (KeyBase selectedKey in selectedKeys)
             if (columnIndex == selectedKey.Column && rowIndex == selectedKey.Row)
             {
               DrawSelectedKey(graphics, columnIndex, rowIndex, keyType, isSelected, keyName);
@@ -358,43 +358,40 @@ namespace CR_XkeysEngine
       selectedKeys.Clear();
     }
 
-    public void AddKeyToSelection(XkeyBase key)
+    public void AddKeyToSelection(KeyBase key)
     {
       selectedKeys.Add(key);
     }
 
-    void DrawColumn(Graphics graphics, int columnIndex, byte keyCode, int blockedKeyMask, XkeyLayout xkeyLayout, bool isFocused)
+    void DrawColumn(Graphics graphics, int columnIndex, byte keyCode, int blockedKeyMask, KeyLayout xkeyLayout, bool isFocused)
     {
       for (int rowIndex = 0; rowIndex < Hardware.Keyboard.NumRows; rowIndex++)
-        DrawKey(graphics, columnIndex, rowIndex, keyCode, blockedKeyMask, xkeyLayout, XKeysGroupType.NoGroup, isFocused);
+        DrawKey(graphics, columnIndex, rowIndex, keyCode, blockedKeyMask, xkeyLayout, KeyGroupType.NoGroup, isFocused);
     }
 
-    public void Draw(Graphics graphics, XkeysDataHandler xkeysDataHandler, XkeyLayout xkeyLayout, bool isFocused)
+    public void Draw(Graphics graphics, XkeysDataHandler xkeysDataHandler, KeyLayout xkeyLayout, bool isFocused)
     {
       if (xkeyLayout != null)
-      {
-        foreach (XkeyBase key in xkeyLayout.Keys)
+        foreach (KeyBase key in xkeyLayout.Keys)
         {
           int columnIndex = key.Column;
           byte keyCode = xkeysDataHandler.LastKeyCode[columnIndex];
           byte blockedKeyMask = xkeysDataHandler.BlockedKeysMask[columnIndex];
-          XkeyGroup xkeyGroup = key as XkeyGroup;
+          KeyGroup xkeyGroup = key as KeyGroup;
 
-          XKeysGroupType keyType;
+          KeyGroupType keyType;
           if (xkeyGroup != null)
             keyType = xkeyGroup.Type;
           else
-            keyType = XKeysGroupType.NoGroup;
+            keyType = KeyGroupType.NoGroup;
 
           DrawKey(graphics, columnIndex, key.Row, keyCode, blockedKeyMask, xkeyLayout, keyType, isFocused);
         }
-
-      }
       else
         Draw(graphics, xkeysDataHandler.LastKeyCode, xkeysDataHandler.BlockedKeysMask, xkeyLayout, isFocused);
     }
 
-    public void Draw(Graphics graphics, Byte[] keyCode, Byte[] blockedKeys, XkeyLayout xkeyLayout, bool isFocused)
+    public void Draw(Graphics graphics, Byte[] keyCode, Byte[] blockedKeys, KeyLayout xkeyLayout, bool isFocused)
     {
       for (int i = 0; i < keyCode.Length; i++)
         DrawColumn(graphics, i, keyCode[i], blockedKeys[i], xkeyLayout, isFocused);

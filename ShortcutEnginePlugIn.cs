@@ -16,10 +16,15 @@ namespace CR_XkeysEngine
 {
 	public class ShortcutsPlugIn: StandardPlugIn
 	{
+    const int INT_InitialDelay = 400;
+    const int INT_RepeatInterval = 60;
 		#region private fields...
     List<XkeyPressedEventArgs> keyBuffer = new List<XkeyPressedEventArgs>();
 		CommandKeyFolder _RootFolder;
     SynchronizationContext _UIContext;
+    string lastCustomData;
+    private List<XkeyPressedEventArgs> repeatingKeys = new List<XkeyPressedEventArgs>();
+    private System.Windows.Forms.Timer tmrRepeat;
     private XkeysEngine xkeysEngine;
     private DevExpress.CodeRush.Core.Action actSendKeys;
     private IContainer components;
@@ -30,7 +35,9 @@ namespace CR_XkeysEngine
 		#region ShortcutEnginePlugIn
 		public ShortcutsPlugIn()
 		{
-			InitializeComponent();
+      tmrRepeat = new System.Windows.Forms.Timer();
+      tmrRepeat.Tick += tmrRepeat_Tick;
+      InitializeComponent();
 		}
 		#endregion
 
@@ -44,7 +51,8 @@ namespace CR_XkeysEngine
 			
       LoadShortcuts();
 
-      XkeysRaw.Connect();
+      Hardware.Keyboard.Connect();
+      
       xkeysEngine = new XkeysEngine();
       xkeysEngine.XkeyPressed += xkeysEngine_XkeyPressed;
 		}
@@ -139,10 +147,64 @@ namespace CR_XkeysEngine
       return !(optionsForm == null || optionsForm.Handle != foregroundWindowHandle);
     }
 
+    void HandleRepeatingKeys()
+    {
+      if (repeatingKeys.Count == 0)
+        return;
+      tmrRepeat.Interval = INT_InitialDelay;
+      tmrRepeat.Enabled = true;
+    }
+
+    void tmrRepeat_Tick(object sender, EventArgs e)
+    {
+      FireRepeatingKeys();
+      if (tmrRepeat.Enabled)
+        tmrRepeat.Interval = INT_RepeatInterval;
+      else
+        tmrRepeat.Interval = INT_InitialDelay;
+      tmrRepeat.Enabled = true;
+    }
+
+    void FireRepeatingKeys()
+    {
+      ExecuteShortcuts(repeatingKeys);
+    }
+
+    void CollectRepeatingKeys(List<XkeyPressedEventArgs> keyBuffer)
+    {
+      if (repeatingKeys.Count > 0)
+        repeatingKeys.Clear();
+
+      foreach (XkeyPressedEventArgs ea in keyBuffer)
+        foreach (KeyBase xkeyBase in ea.KeysDown)
+          if (xkeyBase.Repeating)
+          {
+            repeatingKeys.Add(ea);
+            break;
+          }
+    }
+
+    void ExecuteShortcuts(List<XkeyPressedEventArgs> keyBuffer)
+    {
+      List<CommandKeyBinding> shortcutsToExecute = new List<CommandKeyBinding>();
+      foreach (XkeyPressedEventArgs ea in keyBuffer)
+        foreach (CommandKeyBinding shortcut in _Shortcuts)
+          if (shortcut.Enabled && shortcut.Matches(ea.CustomData) == MatchQuality.FullMatch)
+            shortcutsToExecute.Add(shortcut);
+
+      foreach (CommandKeyBinding shortcut in shortcutsToExecute)
+        shortcut.Execute();
+    }
     void ProcessShortcutsOnUIThread()
     {
+      tmrRepeat.Enabled = false;
+
       if (OptionsDialogHasFocus())
+      {
+        lock (keyBuffer)
+          keyBuffer.Clear();
         return;
+      }
 
       List<XkeyPressedEventArgs> localKeyBuffer = new List<XkeyPressedEventArgs>();
 
@@ -152,19 +214,19 @@ namespace CR_XkeysEngine
         keyBuffer.Clear();
       }
 
-      foreach (XkeyPressedEventArgs ea in localKeyBuffer)
-        foreach (CommandKeyBinding shortcut in _Shortcuts)
-          if (shortcut.Matches(ea.CustomData) == MatchQuality.FullMatch)
-          {
-            shortcut.Execute();
-          }
-
-      
+      CollectRepeatingKeys(localKeyBuffer);
+      ExecuteShortcuts(localKeyBuffer);
+      HandleRepeatingKeys();
     }
+
     void xkeysEngine_XkeyPressed(object sender, XkeyPressedEventArgs e)
     {
+      if (!CodeRush.IDE.IsActive)
+        return;
+
       lock (keyBuffer)
       {
+        lastCustomData = e.CustomData;
         keyBuffer.Add(e);
       }
 

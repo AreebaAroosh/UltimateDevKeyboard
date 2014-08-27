@@ -52,6 +52,7 @@ namespace CR_XkeysEngine
       // edCustom
       // 
       this.edCustom.AltKeyDown = false;
+      this.edCustom.AnyShiftModifier = false;
       this.edCustom.CtrlKeyDown = false;
       this.edCustom.Dock = System.Windows.Forms.DockStyle.Fill;
       this.edCustom.Location = new System.Drawing.Point(0, 0);

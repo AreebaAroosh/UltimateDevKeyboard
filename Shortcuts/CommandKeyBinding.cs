@@ -156,7 +156,7 @@ namespace CR_XkeysEngine
     #endregion
 
     
-    public string GetDisplayShortcut(XkeyLayout xkeyLayout = null)
+    public string GetDisplayShortcut(KeyLayout xkeyLayout = null)
     {
       if (xkeyLayout == null)
         return CustomBindingName;

@@ -123,9 +123,12 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>162, 17</value>
   </metadata>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>162, 17</value>
-  </metadata>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Select the key or keys to change, and then select the layout option to 
+the right to apply to your selection. 
+Use the Shift and/or Ctrl keys with the mouse to select multiple keys.
+Use Alt with the arrow keys to select an adjacent key.</value>
+  </data>
   <metadata name="dxCoreEvents1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>269, 17</value>
   </metadata>

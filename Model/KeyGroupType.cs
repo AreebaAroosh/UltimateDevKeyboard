@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace CR_XkeysEngine
 {
-  public enum XKeysGroupType
+  public enum KeyGroupType
   {
     NoGroup,
     Tall,

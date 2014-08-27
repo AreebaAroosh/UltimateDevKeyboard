@@ -5,23 +5,15 @@ using DevExpress.CodeRush.Core;
 
 namespace CR_XkeysEngine
 {
-  public class XkeyGroup : XkeyBase
+  public class KeyGroup : KeyBase
   {
-    public XKeysGroupType Type { get; set; }
-    readonly List<XkeyBase> keys = new List<XkeyBase>();
-
-    //public override bool IsHit(int column, int row)
-    //{
-    //  foreach (XkeyBase key in keys)
-    //    if (key.IsHit(column, row))
-    //      return true;
-    //  return false;
-    //}
+    public KeyGroupType Type { get; set; }
+    readonly List<KeyBase> keys = new List<KeyBase>();
 
     public override bool ClearSelection()
     {
       bool changed = base.ClearSelection();
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
         if (key.ClearSelection())
           changed = true;
       return changed;
@@ -30,14 +22,14 @@ namespace CR_XkeysEngine
     public override void Select(int column, int row)
     {
       base.Select(column, row);
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
         key.Select(column, row);
     }
 
     public override void ToggleSelection(int column, int row)
     {
       base.ToggleSelection(column, row);
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
         key.ToggleSelection(column, row);
     }
 
@@ -45,7 +37,7 @@ namespace CR_XkeysEngine
     public override void SetName(string newName)
     {
       base.SetName(newName);
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
         key.SetName(newName);
     }
 
@@ -53,7 +45,7 @@ namespace CR_XkeysEngine
     {
       if (base.IsAt(column, row))
         return true;
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
         if (key.IsAt(column, row))
           return true;
       return false;
@@ -71,21 +63,21 @@ namespace CR_XkeysEngine
         keys[i].Save(storage, String.Format("{0}.Group{1}", section, index), i);
     }
 
-    public void Ungroup(XkeyLayout layout)
+    public void Ungroup(KeyLayout layout)
     {
       layout.Remove(this);
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
         layout.Keys.Add(key);
     }
 
     public override void Load(DecoupledStorage storage, string section, int index)
     {
       base.Load(storage, section, index);
-      Type = (XKeysGroupType)storage.ReadEnum<XKeysGroupType>(section, "Type" + index, XKeysGroupType.Wide);
+      Type = (KeyGroupType)storage.ReadEnum<KeyGroupType>(section, "Type" + index, KeyGroupType.Wide);
 
       int numElements = storage.ReadInt32(section, "GroupCount" + index, 0);
       for (int i = 0; i < numElements; i++)
-        keys.Add(XkeyBase.CreateAndLoad(storage, String.Format("{0}.Group{1}", section, index), i));
+        keys.Add(KeyBase.CreateAndLoad(storage, String.Format("{0}.Group{1}", section, index), i));
     }
 
     /// <summary>
@@ -93,11 +85,13 @@ namespace CR_XkeysEngine
     /// </summary>
     public override byte GetRowDataValue()
     {
+      // This appears to NEVER be called. Let's delete and decouple hardware dependencies from this class.
       byte result = 0;
-      foreach (XkeyBase key in keys)
+      foreach (KeyBase key in keys)
       {
         // Add all row data values regardless of whether each sub-key is down. A group's row data value will always be the sum of all of its keys being down, even though it's physically possible to press only one key of the entire group - we need to be able to match that one key or any combination.
         result += key.GetRowDataValue();
+        // TODO: Is this correct for wide keys? Reviewing the code it looks like the operator should be "|=". We apparently don't need to fix because this appears to never be called (we are individually accessing GetSingleKey when a group is involved).
       }
       return result;
     }
@@ -106,14 +100,14 @@ namespace CR_XkeysEngine
     {
       get
       {
-        foreach (XkeyBase key in keys)
-          if (XkeysRaw.Data.IsKeyDown(key.Column, key.Row))
+        foreach (KeyBase key in keys)
+          if (Hardware.Keyboard.IsDown(key.Column, key.Row))
             return true;
         return false;
       }
     }
 
-    public List<XkeyBase> Keys
+    public List<KeyBase> Keys
     {
       get
       {

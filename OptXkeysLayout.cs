@@ -11,11 +11,10 @@ namespace CR_XkeysEngine
   [UserLevel(UserLevel.NewUser)]
   public partial class OptXkeysLayout : OptionsPage
   {
-    XkeyBase lastHoverKey;
-    private string lastKeyName;
+    KeyBase lastHoverKey;
     private double previewAspectRatio;
     bool updatingInternally;
-    XkeyLayout xkeyLayout = new XkeyLayout();
+    KeyLayout xkeyLayout = new KeyLayout();
     readonly XkeysPainter xkeysPainter = new XkeysPainter();
 
     // DXCore-generated code...
@@ -80,19 +79,21 @@ namespace CR_XkeysEngine
       try
       {
         XkeySelection selection = xkeyLayout.GetSelection();
-        bool isTall = selection.GetGroupType() == XKeysGroupType.Tall;
-        bool isWide = selection.GetGroupType() == XKeysGroupType.Wide;
-        bool isSquare = selection.GetGroupType() == XKeysGroupType.Square;
+        bool isTall = selection.GetGroupType() == KeyGroupType.Tall;
+        bool isWide = selection.GetGroupType() == KeyGroupType.Wide;
+        bool isSquare = selection.GetGroupType() == KeyGroupType.Square;
 
         chkTall.Checked = isTall;
         chkWide.Checked = isWide;
         chkSquareButton.Checked = isSquare;
-
+        chkKeyRepeatsifHeldDown.Checked = selection.AllKeysRepeatIfHeldDown();
         chkBlocker.Enabled = selection.HasOnlySingleKeys();
+        txtKeyName.Enabled = selection.Count > 0;
         if (chkBlocker.Enabled)
           chkBlocker.Checked = selection.IsBlocked();
         chkTall.Enabled = isTall || selection.CanBeTall();
         chkWide.Enabled = isWide || selection.CanBeWide();
+        chkKeyRepeatsifHeldDown.Enabled = selection.Count > 0;
         chkSquareButton.Enabled = isSquare || selection.CanBeSquare();
         txtKeyName.Text = selection.GetName();
       }
@@ -104,7 +105,15 @@ namespace CR_XkeysEngine
 
     private void btnAutoDetectBlockers_Click(object sender, EventArgs e)
     {
-      // But why did he intentionally misspell motivations?
+      foreach (KeyBase key in xkeyLayout.Keys)
+      {
+        Key xkey = key as Key;
+        if (xkey != null)
+          xkey.IsBlocked = XkeysRaw.Data.IsKeyDown(key.Column, key.Row);
+      }
+      xkeyLayout.BlockSettingsChanged();
+      RefreshKeyLayout();
+      txtKeyName.Focus();
     }
 
     private void chkTall_CheckedChanged(object sender, EventArgs e)
@@ -112,10 +121,11 @@ namespace CR_XkeysEngine
       if (updatingInternally)
         return;
       XkeySelection selection = xkeyLayout.GetSelection();
-      if (selection.GetGroupType() == XKeysGroupType.Tall)
+      if (selection.GetGroupType() == KeyGroupType.Tall)
         xkeyLayout.UngroupSelection();
       else if (selection.Count == 2)
-        xkeyLayout.GroupSelection(XKeysGroupType.Tall);
+        xkeyLayout.GroupSelection(KeyGroupType.Tall);
+      txtKeyName.Focus();
     }
 
     private void chkSquareButton_CheckedChanged(object sender, EventArgs e)
@@ -123,10 +133,11 @@ namespace CR_XkeysEngine
       if (updatingInternally)
         return;
       XkeySelection selection = xkeyLayout.GetSelection();
-      if (selection.GetGroupType() == XKeysGroupType.Square)
+      if (selection.GetGroupType() == KeyGroupType.Square)
         xkeyLayout.UngroupSelection();
       else if (selection.Count == 4)
-        xkeyLayout.GroupSelection(XKeysGroupType.Square);
+        xkeyLayout.GroupSelection(KeyGroupType.Square);
+      txtKeyName.Focus();
     }
 
     private void chkWide_CheckedChanged(object sender, EventArgs e)
@@ -134,10 +145,11 @@ namespace CR_XkeysEngine
       if (updatingInternally)
         return;
       XkeySelection selection = xkeyLayout.GetSelection();
-      if (selection.GetGroupType() == XKeysGroupType.Wide)
+      if (selection.GetGroupType() == KeyGroupType.Wide)
         xkeyLayout.UngroupSelection();
       else if (selection.Count == 2)
-        xkeyLayout.GroupSelection(XKeysGroupType.Wide);
+        xkeyLayout.GroupSelection(KeyGroupType.Wide);
+      txtKeyName.Focus();
     }
 
     private void chkBlocker_CheckedChanged(object sender, EventArgs e)
@@ -145,13 +157,13 @@ namespace CR_XkeysEngine
       if (updatingInternally)
         return;
       XkeySelection selection = xkeyLayout.GetSelection();
-      if (selection.GetGroupType() != XKeysGroupType.NoGroup)
+      if (selection.GetGroupType() != KeyGroupType.NoGroup)
         return;
 
       bool allAreBlocked = true;
-      foreach (XkeyBase selectedKey in selection.SelectedKeys)
+      foreach (KeyBase selectedKey in selection.SelectedKeys)
       {
-        Xkey xkey = selectedKey as Xkey;
+        Key xkey = selectedKey as Key;
         if (xkey != null)
           if (!xkey.IsBlocked)
             allAreBlocked = false;
@@ -162,27 +174,23 @@ namespace CR_XkeysEngine
         newBlockSetting = false;
       else
         newBlockSetting = true;
-      foreach (XkeyBase selectedKey in selection.SelectedKeys)
+      foreach (KeyBase selectedKey in selection.SelectedKeys)
       {
-        Xkey xkey = selectedKey as Xkey;
+        Key xkey = selectedKey as Key;
         if (xkey != null)
           xkey.IsBlocked = newBlockSetting;
       }
+      xkeyLayout.BlockSettingsChanged();
       RefreshKeyLayout();
-    }
-
-    void TextHasChanged()
-    {
-      if (updatingInternally)
-        return;
-      lastKeyName = txtKeyName.Text;
-      xkeyLayout.SetName(lastKeyName);
-      pnlKeyPreview.Invalidate();
+      txtKeyName.Focus();
     }
 
     private void txtKeyName_TextChanged(object sender, EventArgs e)
     {
-      TextHasChanged();
+      if (updatingInternally)
+        return;
+      xkeyLayout.SetName(txtKeyName.Text);
+      pnlKeyPreview.Invalidate();
     }
 
     private void OptXkeysLayout_CommitChanges(object sender, CommitChangesEventArgs ea)
@@ -247,18 +255,19 @@ namespace CR_XkeysEngine
         {
           pnlKeyPreview.Invalidate();
           UpdateControlsBasedOnSelection();
+          txtKeyName.Focus();
         }
       }
     }
 
     private void pnlKeyPreview_MouseMove(object sender, MouseEventArgs e)
     {
-      // TODO: Fix this.
+      // TODO: Fix this so tool tips over the layout keys actually work.
       int row;
       int column;
       if (xkeysPainter.IsHit(e.X, e.Y, out column, out row))
       {
-        XkeyBase key = xkeyLayout.GetKey(column, row);
+        KeyBase key = xkeyLayout.GetKey(column, row);
         if (key != lastHoverKey)
         {
           lastHoverKey = key;
@@ -279,16 +288,65 @@ namespace CR_XkeysEngine
       }
     }
 
-    private void txtKeyName_KeyUp(object sender, KeyEventArgs e)
-    {
-      //if (lastKeyName != txtKeyName.Text)
-      //  TextHasChanged();
-    }
-
     private void linkShortcuts_OpenLink(object sender, DevExpress.DXCore.Controls.XtraEditors.Controls.OpenLinkEventArgs e)
     {
       CodeRush.Options.Show(typeof(OptXkeysShortcuts));
     }
-    
+
+    void MoveSelection(int deltaX, int deltaY, bool addToSelection)
+    {
+      xkeyLayout.MoveSelection(deltaX, deltaY, addToSelection);
+      UpdateControlsBasedOnSelection();
+      RefreshKeyLayout();
+    }
+    void MoveSelectionLeft(bool addToSelection)
+    {
+      MoveSelection(-1, 0, addToSelection);
+    }
+
+    void MoveSelectionRight(bool addToSelection)
+    {
+      MoveSelection(1, 0, addToSelection);
+    }
+
+    void MoveSelectionUp(bool addToSelection)
+    {
+      MoveSelection(0, -1, addToSelection);
+    }
+
+    void MoveSelectionDown(bool addToSelection)
+    {
+      MoveSelection(0, 1, addToSelection);
+    }
+
+    private void txtKeyName_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.KeyData == (Keys.Alt | Keys.Up))
+        MoveSelectionUp(false);
+      else if (e.KeyData == (Keys.Alt | Keys.Down))
+        MoveSelectionDown(false);
+      else if (e.KeyData == (Keys.Alt | Keys.Left))
+        MoveSelectionLeft(false);
+      else if (e.KeyData == (Keys.Alt | Keys.Right))
+        MoveSelectionRight(false);
+      else if (e.KeyData == (Keys.Alt | Keys.Shift | Keys.Up))
+        MoveSelectionUp(true);
+      else if (e.KeyData == (Keys.Alt | Keys.Shift | Keys.Down))
+        MoveSelectionDown(true);
+      else if (e.KeyData == (Keys.Alt | Keys.Shift | Keys.Left))
+        MoveSelectionLeft(true);
+      else if (e.KeyData == (Keys.Alt | Keys.Shift | Keys.Right))
+        MoveSelectionRight(true);
+    }
+
+    private void chkKeyRepeatsifHeldDown_CheckedChanged(object sender, EventArgs e)
+    {
+      if (updatingInternally)
+        return;
+      xkeyLayout.SetRepeat(chkKeyRepeatsifHeldDown.Checked);
+      pnlKeyPreview.Invalidate();
+      txtKeyName.Focus();
+    }
+
   }
 }

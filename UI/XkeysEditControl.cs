@@ -22,7 +22,7 @@ namespace CR_XkeysEngine
     private System.ComponentModel.Container components = null;
     
     string customData;
-    XkeyLayout xkeyLayout;
+    KeyLayout xkeyLayout;
     XkeysEngine xkeysEngine;
 
     private FlickerFreeFocusPanel xkeyPreview;
@@ -40,8 +40,8 @@ namespace CR_XkeysEngine
       OnCustomInputChanged(ShortcutFromControls());
 
       xkeysPainter.ClearKeySelection();
-      List<XkeyBase> pressedKeys = xkeyLayout.GetPressedKeys(_Shortcut.CustomData);
-      foreach (XkeyBase pressedKey in pressedKeys)
+      List<KeyBase> pressedKeys = xkeyLayout.GetPressedKeys(_Shortcut.CustomData);
+      foreach (KeyBase pressedKey in pressedKeys)
         xkeysPainter.AddKeyToSelection(pressedKey);
 
       xkeyPreview.Invalidate();
@@ -132,7 +132,6 @@ namespace CR_XkeysEngine
       this.lblXKeys = new System.Windows.Forms.Label();
       this.xkeyPreview = new CR_XkeysEngine.FlickerFreeFocusPanel();
       this.chkAny = new DevExpress.DXCore.Controls.XtraEditors.CheckButton();
-      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).BeginInit();
       this.SuspendLayout();
       // 
       // btnShift
@@ -217,7 +216,6 @@ namespace CR_XkeysEngine
       this.Controls.Add(this.lblXKeysPlus);
       this.Name = "XkeysEditControl";
       this.Size = new System.Drawing.Size(268, 173);
-      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -238,8 +236,8 @@ namespace CR_XkeysEngine
     {
       this.customData = customData;
       xkeysPainter.ClearKeySelection();
-      List<XkeyBase> pressedKeys = xkeyLayout.GetPressedKeys(customData);
-      foreach (XkeyBase pressedKey in pressedKeys)
+      List<KeyBase> pressedKeys = xkeyLayout.GetPressedKeys(customData);
+      foreach (KeyBase pressedKey in pressedKeys)
         xkeysPainter.AddKeyToSelection(pressedKey);
       xkeyPreview.Invalidate();
     }
@@ -390,7 +388,7 @@ namespace CR_XkeysEngine
       }
     }
     
-    public XkeyLayout XkeyLayout
+    public KeyLayout XkeyLayout
     {
       get
       {

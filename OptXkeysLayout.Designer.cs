@@ -40,6 +40,7 @@ namespace CR_XkeysEngine
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptXkeysLayout));
       this.chkWide = new DevExpress.DXCore.Controls.XtraEditors.CheckButton();
       this.chkSquareButton = new DevExpress.DXCore.Controls.XtraEditors.CheckButton();
       this.chkTall = new DevExpress.DXCore.Controls.XtraEditors.CheckButton();
@@ -55,6 +56,7 @@ namespace CR_XkeysEngine
       this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
       this.dxCoreEvents1 = new DevExpress.DXCore.PlugInCore.DXCoreEvents(this.components);
       this.pnlLayoutOptions = new System.Windows.Forms.Panel();
+      this.chkKeyRepeatsifHeldDown = new System.Windows.Forms.CheckBox();
       this.linkShortcuts = new DevExpress.DXCore.Controls.XtraEditors.HyperLinkEdit();
       ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).BeginInit();
       this.pnlKeyPreviewContainer.SuspendLayout();
@@ -66,30 +68,33 @@ namespace CR_XkeysEngine
       // 
       // chkWide
       // 
+      this.chkWide.Enabled = false;
       this.chkWide.Location = new System.Drawing.Point(3, 129);
       this.chkWide.Name = "chkWide";
       this.chkWide.Size = new System.Drawing.Size(100, 50);
       this.chkWide.TabIndex = 3;
-      this.chkWide.Text = "Wide";
+      this.chkWide.Text = "&Wide";
       this.toolTip1.SetToolTip(this.chkWide, "Convert between two adjacent keys and a wide key.");
       this.chkWide.CheckedChanged += new System.EventHandler(this.chkWide_CheckedChanged);
       // 
       // chkSquareButton
       // 
+      this.chkSquareButton.Enabled = false;
       this.chkSquareButton.Location = new System.Drawing.Point(62, 21);
       this.chkSquareButton.Name = "chkSquareButton";
       this.chkSquareButton.Size = new System.Drawing.Size(100, 100);
-      this.chkSquareButton.TabIndex = 4;
-      this.chkSquareButton.Text = "Square";
+      this.chkSquareButton.TabIndex = 2;
+      this.chkSquareButton.Text = "&Square";
       this.chkSquareButton.CheckedChanged += new System.EventHandler(this.chkSquareButton_CheckedChanged);
       // 
       // chkTall
       // 
+      this.chkTall.Enabled = false;
       this.chkTall.Location = new System.Drawing.Point(3, 21);
       this.chkTall.Name = "chkTall";
       this.chkTall.Size = new System.Drawing.Size(50, 100);
-      this.chkTall.TabIndex = 2;
-      this.chkTall.Text = "Tall";
+      this.chkTall.TabIndex = 1;
+      this.chkTall.Text = "&Tall";
       this.chkTall.ToolTip = "Convert between two stacked keys and a tall key.";
       this.chkTall.CheckedChanged += new System.EventHandler(this.chkTall_CheckedChanged);
       // 
@@ -97,10 +102,10 @@ namespace CR_XkeysEngine
       // 
       this.pnlKeyPreviewContainer.BackColor = System.Drawing.Color.DimGray;
       this.pnlKeyPreviewContainer.Controls.Add(this.pnlKeyPreview);
-      this.pnlKeyPreviewContainer.Location = new System.Drawing.Point(3, 53);
+      this.pnlKeyPreviewContainer.Location = new System.Drawing.Point(3, 69);
       this.pnlKeyPreviewContainer.Name = "pnlKeyPreviewContainer";
       this.pnlKeyPreviewContainer.Size = new System.Drawing.Size(357, 296);
-      this.pnlKeyPreviewContainer.TabIndex = 5;
+      this.pnlKeyPreviewContainer.TabIndex = 1;
       // 
       // pnlKeyPreview
       // 
@@ -111,17 +116,19 @@ namespace CR_XkeysEngine
       this.pnlKeyPreview.Name = "pnlKeyPreview";
       this.pnlKeyPreview.Size = new System.Drawing.Size(346, 285);
       this.pnlKeyPreview.TabIndex = 0;
+      this.pnlKeyPreview.TabStop = true;
       this.pnlKeyPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlKeyPreview_Paint);
       this.pnlKeyPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pnlKeyPreview_MouseDown);
       this.pnlKeyPreview.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pnlKeyPreview_MouseMove);
       // 
       // chkBlocker
       // 
+      this.chkBlocker.Enabled = false;
       this.chkBlocker.Location = new System.Drawing.Point(112, 129);
       this.chkBlocker.Name = "chkBlocker";
       this.chkBlocker.Size = new System.Drawing.Size(50, 50);
-      this.chkBlocker.TabIndex = 6;
-      this.chkBlocker.Text = "Blocker";
+      this.chkBlocker.TabIndex = 4;
+      this.chkBlocker.Text = "&Blocker";
       this.chkBlocker.CheckedChanged += new System.EventHandler(this.chkBlocker_CheckedChanged);
       // 
       // label1
@@ -129,26 +136,24 @@ namespace CR_XkeysEngine
       this.label1.AutoSize = true;
       this.label1.Location = new System.Drawing.Point(3, 8);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(346, 39);
-      this.label1.TabIndex = 7;
-      this.label1.Text = "Select the key or keys to change, and then select the layout option to \r\nthe righ" +
-    "t to apply to your selection. \r\nUse the Shift and/or Ctrl keys to select multipl" +
-    "e keys";
+      this.label1.Size = new System.Drawing.Size(346, 52);
+      this.label1.TabIndex = 0;
+      this.label1.Text = resources.GetString("label1.Text");
       // 
       // btnAutoDetectBlockers
       // 
-      this.btnAutoDetectBlockers.Location = new System.Drawing.Point(40, 253);
+      this.btnAutoDetectBlockers.Location = new System.Drawing.Point(40, 271);
       this.btnAutoDetectBlockers.Name = "btnAutoDetectBlockers";
       this.btnAutoDetectBlockers.Size = new System.Drawing.Size(122, 33);
       this.btnAutoDetectBlockers.TabIndex = 8;
-      this.btnAutoDetectBlockers.Text = "Auto-detect Blockers";
+      this.btnAutoDetectBlockers.Text = "&Auto-detect Blockers";
       this.btnAutoDetectBlockers.UseVisualStyleBackColor = true;
       this.btnAutoDetectBlockers.Click += new System.EventHandler(this.btnAutoDetectBlockers_Click);
       // 
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(40, 290);
+      this.label2.Location = new System.Drawing.Point(40, 308);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(122, 65);
       this.label2.TabIndex = 9;
@@ -161,18 +166,19 @@ namespace CR_XkeysEngine
       this.label3.Location = new System.Drawing.Point(0, 193);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(59, 13);
-      this.label3.TabIndex = 10;
-      this.label3.Text = "Key Name:";
+      this.label3.TabIndex = 5;
+      this.label3.Text = "Key &Name:";
       // 
       // txtKeyName
       // 
+      this.txtKeyName.Enabled = false;
       this.txtKeyName.Location = new System.Drawing.Point(2, 209);
       this.txtKeyName.Name = "txtKeyName";
       this.txtKeyName.Size = new System.Drawing.Size(159, 21);
-      this.txtKeyName.TabIndex = 11;
+      this.txtKeyName.TabIndex = 6;
       this.toolTip1.SetToolTip(this.txtKeyName, "Enter the name of the selected key.");
       this.txtKeyName.TextChanged += new System.EventHandler(this.txtKeyName_TextChanged);
-      this.txtKeyName.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtKeyName_KeyUp);
+      this.txtKeyName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtKeyName_KeyDown);
       // 
       // label4
       // 
@@ -180,7 +186,7 @@ namespace CR_XkeysEngine
       this.label4.Location = new System.Drawing.Point(0, 2);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(84, 13);
-      this.label4.TabIndex = 12;
+      this.label4.TabIndex = 0;
       this.label4.Text = "Layout Options:";
       // 
       // toolTip1
@@ -193,6 +199,7 @@ namespace CR_XkeysEngine
       // 
       // pnlLayoutOptions
       // 
+      this.pnlLayoutOptions.Controls.Add(this.chkKeyRepeatsifHeldDown);
       this.pnlLayoutOptions.Controls.Add(this.chkTall);
       this.pnlLayoutOptions.Controls.Add(this.label4);
       this.pnlLayoutOptions.Controls.Add(this.chkWide);
@@ -204,8 +211,20 @@ namespace CR_XkeysEngine
       this.pnlLayoutOptions.Controls.Add(this.btnAutoDetectBlockers);
       this.pnlLayoutOptions.Location = new System.Drawing.Point(366, 31);
       this.pnlLayoutOptions.Name = "pnlLayoutOptions";
-      this.pnlLayoutOptions.Size = new System.Drawing.Size(168, 365);
-      this.pnlLayoutOptions.TabIndex = 13;
+      this.pnlLayoutOptions.Size = new System.Drawing.Size(168, 409);
+      this.pnlLayoutOptions.TabIndex = 2;
+      // 
+      // chkKeyRepeatsifHeldDown
+      // 
+      this.chkKeyRepeatsifHeldDown.AutoSize = true;
+      this.chkKeyRepeatsifHeldDown.Enabled = false;
+      this.chkKeyRepeatsifHeldDown.Location = new System.Drawing.Point(4, 240);
+      this.chkKeyRepeatsifHeldDown.Name = "chkKeyRepeatsifHeldDown";
+      this.chkKeyRepeatsifHeldDown.Size = new System.Drawing.Size(148, 17);
+      this.chkKeyRepeatsifHeldDown.TabIndex = 0;
+      this.chkKeyRepeatsifHeldDown.Text = "Key &Repeats if held down";
+      this.chkKeyRepeatsifHeldDown.UseVisualStyleBackColor = true;
+      this.chkKeyRepeatsifHeldDown.CheckedChanged += new System.EventHandler(this.chkKeyRepeatsifHeldDown_CheckedChanged);
       // 
       // linkShortcuts
       // 
@@ -215,7 +234,7 @@ namespace CR_XkeysEngine
       this.linkShortcuts.Name = "linkShortcuts";
       this.linkShortcuts.Properties.BorderStyle = DevExpress.DXCore.Controls.XtraEditors.Controls.BorderStyles.NoBorder;
       this.linkShortcuts.Size = new System.Drawing.Size(50, 18);
-      this.linkShortcuts.TabIndex = 18;
+      this.linkShortcuts.TabIndex = 3;
       this.linkShortcuts.OpenLink += new DevExpress.DXCore.Controls.XtraEditors.Controls.OpenLinkEventHandler(this.linkShortcuts_OpenLink);
       // 
       // OptXkeysLayout
@@ -309,5 +328,6 @@ namespace CR_XkeysEngine
     private DevExpress.DXCore.PlugInCore.DXCoreEvents dxCoreEvents1;
     private System.Windows.Forms.Panel pnlLayoutOptions;
     private DevExpress.DXCore.Controls.XtraEditors.HyperLinkEdit linkShortcuts;
+    private System.Windows.Forms.CheckBox chkKeyRepeatsifHeldDown;
   }
 }

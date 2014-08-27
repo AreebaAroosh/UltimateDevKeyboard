@@ -107,19 +107,17 @@ namespace CR_XkeysEngine
     private BarButtonItem barButtonItem2;
     private HyperLinkEdit linkLayout;
     private Label lblKeyName;
+    private Label label1;
     static bool _SeparateAltKeysLoaded = false;
     #endregion
 
     // constructors...
     #region OptXKeysShortcuts
-    public OptXkeysShortcuts()
-      : base()
+    public OptXkeysShortcuts(): base()
     {
       InitializeComponent();
-      //_ShortcutCollection = new CommandKeyBindingCollection();
-      //tabKeyboard.ImageIndex = IMG_KeyboardIcon;
 
-      XkeysRaw.Connect();
+      Hardware.Keyboard.Connect();
 
       InitializeVariables();
     }
@@ -180,14 +178,15 @@ namespace CR_XkeysEngine
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo11 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo12 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo13 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
-      DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo23 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo24 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo25 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo26 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
+      DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo27 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo9 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo7 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo8 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptXkeysShortcuts));
+      DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo23 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo bubbleHintInfo6 = new DevExpress.CodeRush.Core.BubbleHints.BubbleHintInfo();
       this.CodeRushEvents = new DevExpress.DXCore.PlugInCore.DXCoreEvents(this.components);
       this.trlsShortcuts = new DevExpress.DXCore.Controls.XtraTreeList.TreeList();
@@ -244,10 +243,11 @@ namespace CR_XkeysEngine
       this.split = new DevExpress.DXCore.Controls.XtraEditors.SplitterControl();
       this.imgTreeListIcons = new System.Windows.Forms.ImageList(this.components);
       this.bigHint = new DevExpress.CodeRush.PlugInCore.BigHint(this.components);
-      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).BeginInit();
+      this.label1 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.CodeRushEvents)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.trlsShortcuts)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.barManager)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.pmTreeList)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.txtParameters.Properties)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.BubbleHints)).BeginInit();
@@ -268,6 +268,10 @@ namespace CR_XkeysEngine
       ((System.ComponentModel.ISupportInitialize)(this.bigHint)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
       this.SuspendLayout();
+      // 
+      // CodeRushEvents
+      // 
+      this.CodeRushEvents.OptionsChanged += new DevExpress.CodeRush.Core.OptionsChangedEventHandler(this.CodeRushEvents_OptionsChanged);
       // 
       // trlsShortcuts
       // 
@@ -508,7 +512,6 @@ namespace CR_XkeysEngine
       this.btnCopyBindingLinkfordocumentation.Caption = "Copy Binding Link (for documentation)";
       this.btnCopyBindingLinkfordocumentation.Id = 12;
       this.btnCopyBindingLinkfordocumentation.Name = "btnCopyBindingLinkfordocumentation";
-      this.btnCopyBindingLinkfordocumentation.ItemClick += new DevExpress.DXCore.Controls.XtraBars.ItemClickEventHandler(this.btnCopyBindingLinkfordocumentation_ItemClick);
       // 
       // barButtonItem1
       // 
@@ -578,7 +581,6 @@ namespace CR_XkeysEngine
             new DevExpress.DXCore.Controls.XtraBars.LinkPersistInfo(this.btnToggleFolders, true),
             new DevExpress.DXCore.Controls.XtraBars.LinkPersistInfo(this.btnCollapseFolders),
             new DevExpress.DXCore.Controls.XtraBars.LinkPersistInfo(this.btnCopyBindingSummaryfortechsupport, true),
-            new DevExpress.DXCore.Controls.XtraBars.LinkPersistInfo(this.btnCopyBindingLinkfordocumentation),
             new DevExpress.DXCore.Controls.XtraBars.LinkPersistInfo(this.btnCopyContext, true),
             new DevExpress.DXCore.Controls.XtraBars.LinkPersistInfo(this.btnPasteContext)});
       this.pmTreeList.Manager = this.barManager;
@@ -724,6 +726,7 @@ namespace CR_XkeysEngine
       this.pnlBindings.Controls.Add(this.chkBindingEnabled);
       this.pnlBindings.Controls.Add(this.cmbCommands);
       this.pnlBindings.Controls.Add(this.lblCommand);
+      this.pnlBindings.Controls.Add(this.label1);
       this.pnlBindings.Dock = System.Windows.Forms.DockStyle.Fill;
       this.pnlBindings.Location = new System.Drawing.Point(2, 2);
       this.pnlBindings.Name = "pnlBindings";
@@ -735,11 +738,12 @@ namespace CR_XkeysEngine
       this.lblKeyName.AutoEllipsis = true;
       bubbleHintInfo11.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
       this.BubbleHints.SetBubbleHint(this.lblKeyName, bubbleHintInfo11);
-      this.lblKeyName.Location = new System.Drawing.Point(76, 182);
+      this.lblKeyName.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+      this.lblKeyName.Location = new System.Drawing.Point(92, 182);
       this.lblKeyName.Name = "lblKeyName";
-      this.lblKeyName.Size = new System.Drawing.Size(200, 17);
+      this.lblKeyName.Size = new System.Drawing.Size(184, 17);
       this.lblKeyName.TabIndex = 18;
-      this.lblKeyName.Text = "Key: ";
+      this.lblKeyName.Text = "(none)";
       // 
       // linkLayout
       // 
@@ -768,8 +772,8 @@ namespace CR_XkeysEngine
       // 
       // pnlFolders
       // 
-      bubbleHintInfo23.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
-      this.BubbleHints.SetBubbleHint(this.pnlFolders, bubbleHintInfo23);
+      bubbleHintInfo24.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
+      this.BubbleHints.SetBubbleHint(this.pnlFolders, bubbleHintInfo24);
       this.pnlFolders.Controls.Add(this.memoFolderComment);
       this.pnlFolders.Controls.Add(this.label2);
       this.pnlFolders.Controls.Add(this.chkFolderEnabled);
@@ -783,8 +787,8 @@ namespace CR_XkeysEngine
       // 
       this.memoFolderComment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      bubbleHintInfo24.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
-      this.BubbleHints.SetBubbleHint(this.memoFolderComment, bubbleHintInfo24);
+      bubbleHintInfo25.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
+      this.BubbleHints.SetBubbleHint(this.memoFolderComment, bubbleHintInfo25);
       this.memoFolderComment.Location = new System.Drawing.Point(4, 52);
       this.memoFolderComment.Name = "memoFolderComment";
       this.memoFolderComment.Size = new System.Drawing.Size(280, 104);
@@ -792,8 +796,8 @@ namespace CR_XkeysEngine
       // 
       // label2
       // 
-      bubbleHintInfo25.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
-      this.BubbleHints.SetBubbleHint(this.label2, bubbleHintInfo25);
+      bubbleHintInfo26.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
+      this.BubbleHints.SetBubbleHint(this.label2, bubbleHintInfo26);
       this.label2.Location = new System.Drawing.Point(8, 32);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(49, 13);
@@ -802,8 +806,8 @@ namespace CR_XkeysEngine
       // 
       // chkFolderEnabled
       // 
-      bubbleHintInfo26.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
-      this.BubbleHints.SetBubbleHint(this.chkFolderEnabled, bubbleHintInfo26);
+      bubbleHintInfo27.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
+      this.BubbleHints.SetBubbleHint(this.chkFolderEnabled, bubbleHintInfo27);
       this.chkFolderEnabled.Location = new System.Drawing.Point(8, 8);
       this.chkFolderEnabled.Name = "chkFolderEnabled";
       this.chkFolderEnabled.Properties.Caption = "&Enabled";
@@ -869,6 +873,17 @@ namespace CR_XkeysEngine
       this.bigHint.Title = "Empty Folder";
       this.bigHint.UserGuidePage = null;
       // 
+      // label1
+      // 
+      this.label1.AutoEllipsis = true;
+      bubbleHintInfo23.CaptionFont = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold);
+      this.BubbleHints.SetBubbleHint(this.label1, bubbleHintInfo23);
+      this.label1.Location = new System.Drawing.Point(61, 182);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(36, 17);
+      this.label1.TabIndex = 19;
+      this.label1.Text = "Key: ";
+      // 
       // OptXkeysShortcuts
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -888,9 +903,9 @@ namespace CR_XkeysEngine
       this.PreparePage += new DevExpress.CodeRush.Core.OptionsPage.PreparePageEventHandler(this.OptShortcuts_PreparePage);
       this.CancelChanges += new DevExpress.CodeRush.Core.OptionsPage.CancelChangesEventHandler(this.OptShortcuts_CancelChanges);
       this.CustomInitialization += new DevExpress.CodeRush.Core.OptionsPage.CustomInitializationEventHandler(this.OptShortcuts_CustomInitialization);
-      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.CodeRushEvents)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.trlsShortcuts)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.Images16x16)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.barManager)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.pmTreeList)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.txtParameters.Properties)).EndInit();
@@ -1288,6 +1303,7 @@ namespace CR_XkeysEngine
         edBinding.CustomInputControl.AnyShiftModifier = _CurrentBinding.AnyShiftModifier;
         edBinding.CustomInputControl.ShiftKeyDown = _CurrentBinding.ShiftKeyDown;
         edBinding.CustomInputControl.SetCustomData(_CurrentBinding.CustomData);
+        lblKeyName.Text = "Key: " + _CurrentBinding.GetDisplayShortcut(edBinding.CustomInputControl.XkeyLayout);
       }
       finally
       {
@@ -2368,19 +2384,6 @@ namespace CR_XkeysEngine
       Clipboard.SetDataObject(summaryStr, true);
     }
     #endregion
-    #region btnCopyBindingLinkfordocumentation_ItemClick
-    private void btnCopyBindingLinkfordocumentation_ItemClick(object sender, DevExpress.DXCore.Controls.XtraBars.ItemClickEventArgs e)
-    {
-      if (CurrentBinding == null)
-        return;
-      string lCommand = CurrentBinding.Command;
-      if (CurrentBinding.Parameters != "" && CurrentBinding.Parameters != null)
-        lCommand += "(" + CurrentBinding.Parameters + ")";
-
-      string lCommandLink = String.Format("[keycmd command=\"{0}\"/]", lCommand);
-      Clipboard.SetDataObject(lCommandLink, true);
-    }
-    #endregion
     private void btnFind_ItemClick(object sender, DevExpress.DXCore.Controls.XtraBars.ItemClickEventArgs e)
     {
       ShortcutsPlugIn.EnableActionExecuting = false;
@@ -2506,8 +2509,6 @@ namespace CR_XkeysEngine
     #region OptShortcuts_CommitChanges
     private void OptShortcuts_CommitChanges(object sender, OptionsPageStorageEventArgs e)
     {
-      //TransferTreeListToShortcutCollection();
-      //_ShortcutCollection.Save(e.Storage, CurrentBinding);
       TransferControlsToCurrentBinding();
       TransferControlsToCurrentFolder();
 
@@ -2541,6 +2542,7 @@ namespace CR_XkeysEngine
       _CurrentBinding.ShiftKeyDown = ea.Shortcut.ShiftKeyDown;
       _CurrentBinding.CustomData = ea.Shortcut.CustomData;
       trlsShortcuts.Invalidate();
+      lblKeyName.Invalidate();
     }
     protected override void HandleOptionsChanged(OptionsPageStorageEventArgs ea)
     {
@@ -2642,6 +2644,12 @@ namespace CR_XkeysEngine
     private void linkLayout_OpenLink(object sender, DevExpress.DXCore.Controls.XtraEditors.Controls.OpenLinkEventArgs e)
     {
       CodeRush.Options.Show(typeof(OptXkeysLayout));
+    }
+
+    private void CodeRushEvents_OptionsChanged(OptionsChangedEventArgs ea)
+    {
+      if (ea.OptionsPages.Contains(typeof(OptXkeysLayout)))
+        edBinding.CustomInputControl.XkeyLayout.Load();
     }
 
   }

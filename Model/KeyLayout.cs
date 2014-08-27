@@ -5,40 +5,18 @@ using DevExpress.CodeRush.Core;
 
 namespace CR_XkeysEngine
 {
-  public class XkeyLayout
+  public class KeyLayout : IKeyGetter
   {
-    List<XkeyBase> keys = new List<XkeyBase>();
+    List<KeyBase> keys = new List<KeyBase>();
 
-    public XkeyLayout()
+    public KeyLayout()
     {
 
     }
 
-    public List<XkeyBase> GetPressedKeys(string customData)
+    public List<KeyBase> GetPressedKeys(string customData)
     {
-      List<XkeyBase> keysPressed = new List<XkeyBase>();
-      string[] columns = customData.Split('.');
-      for (int column = 0; column < columns.Length; column++)
-      {
-        int value;
-        if (int.TryParse(columns[column], out value))
-        {
-          if (value == 0)
-            continue;
-          for (int row = 0; row < Hardware.Keyboard.NumRows; row++)
-          {
-            byte rowMask = (byte)(Math.Pow(2, row));
-            if ((rowMask & value) == rowMask)
-            {
-              XkeyBase keyPressed = GetKey(column, row);
-              if (keysPressed.Contains(keyPressed))
-                continue;
-              keysPressed.Add(keyPressed);
-            }
-          }
-        }
-      }
-      return keysPressed;
+      return Hardware.Keyboard.GetPressedKeys(customData, this as IKeyGetter);
     }
 
     public string GetBindingName(bool anyShiftModifier, bool ctrlKeyDown, bool shiftKeyDown, bool altKeyDown, string customData)
@@ -48,27 +26,10 @@ namespace CR_XkeysEngine
 
     public string GetCodeStr()
     {
-      string result = string.Empty;
-      for (int column = 0; column < Hardware.Keyboard.NumColumns; column++)
-      {
-        byte thisValue = 0;
-        for (int row = 0; row < Hardware.Keyboard.NumRows; row++)
-          if (Hardware.Keyboard.IsValidKey(column, row))
-          {
-            XkeyBase xkey = GetKey(column, row);
-            if (!xkey.IsDown)
-              continue;
-
-            XkeyBase singleXkey = GetSingleKey(column, row);
-            if (singleXkey != null)
-              thisValue += singleXkey.GetRowDataValue();
-          }
-        result += thisValue + ".";
-      }
-      return result.TrimEnd('.');
+      return Hardware.Keyboard.GetCodeStr(this as IKeyGetter);
     }
 
-    public void Remove(XkeyBase key)
+    public void Remove(KeyBase key)
     {
       keys.Remove(key);
     }
@@ -76,11 +37,11 @@ namespace CR_XkeysEngine
     public void UngroupSelection()
     {
       XkeySelection selection = GetSelection();
-      foreach (XkeyBase selectedKey in selection.SelectedKeys)
+      foreach (KeyBase selectedKey in selection.SelectedKeys)
       {
-        XkeyGroup xkeyGroup = selectedKey as XkeyGroup;
-        if (xkeyGroup != null)
-          xkeyGroup.Ungroup(this);
+        KeyGroup keyGroup = selectedKey as KeyGroup;
+        if (keyGroup != null)
+          keyGroup.Ungroup(this);
       }
       OnSelectionChanged();
     }
@@ -88,31 +49,29 @@ namespace CR_XkeysEngine
     void RemoveSelectedKeys()
     {
       XkeySelection selection = GetSelection();
-      foreach (XkeyBase selectedKey in selection.SelectedKeys)
+      foreach (KeyBase selectedKey in selection.SelectedKeys)
         keys.Remove(selectedKey);
     }
 
-    public void GroupSelection(XKeysGroupType xKeysGroupType)
+    public void GroupSelection(KeyGroupType keysGroupType)
     {
       XkeySelection selection = GetSelection();
       RemoveSelectedKeys();
-      XkeyGroup xkeyGroup = new XkeyGroup();
-      xkeyGroup.Type = xKeysGroupType;
-      xkeyGroup.Name = selection.GetName();
+      KeyGroup keyGroup = new KeyGroup() { Type = keysGroupType, Name = selection.GetName() };
       int topmostRow = -1;
       int leftmostColumn = -1;
-      foreach (XkeyBase selectedKey in selection.SelectedKeys)
+      foreach (KeyBase selectedKey in selection.SelectedKeys)
       {
         selectedKey.ClearSelection();
-        xkeyGroup.Keys.Add(selectedKey);
+        keyGroup.Keys.Add(selectedKey);
         if (topmostRow == -1 || selectedKey.Row < topmostRow)
           topmostRow = selectedKey.Row;
         if (leftmostColumn == -1 || selectedKey.Column < leftmostColumn)
           leftmostColumn = selectedKey.Column;
       }
-      xkeyGroup.Selected = true;
-      xkeyGroup.SetPosition(leftmostColumn, topmostRow);
-      keys.Add(xkeyGroup);
+      keyGroup.Selected = true;
+      keyGroup.SetPosition(leftmostColumn, topmostRow);
+      keys.Add(keyGroup);
       OnSelectionChanged();
     }
 
@@ -134,6 +93,45 @@ namespace CR_XkeysEngine
       return selection;
     }
 
+    public void MoveSelection(int deltaX, int deltaY, bool addToSelection)
+    {
+      int selectionColumn = -1;
+      int keyWidth = 1;
+      int keyHeight = 1;
+      int selectionRow = -1;
+      for (int i = 0; i < Keys.Count; i++)
+        if (Keys[i].Selected)
+        {
+          KeyGroup keyGroup = Keys[i] as KeyGroup;
+          if (keyGroup != null)
+          {
+            if (deltaX > 0)
+              if (keyGroup.Type == KeyGroupType.Wide || keyGroup.Type == KeyGroupType.Square)
+                keyWidth = 2;
+            if (deltaY > 0)
+              if (keyGroup.Type == KeyGroupType.Tall || keyGroup.Type == KeyGroupType.Square)
+                keyHeight = 2;
+          }
+          selectionColumn = Keys[i].Column;
+          selectionRow = Keys[i].Row;
+          break;
+        }
+      if (selectionColumn == -1)
+        return;
+
+      
+      int newColumn = selectionColumn + deltaX * keyWidth;
+      int newRow = selectionRow + deltaY * keyHeight;
+      if (Hardware.Keyboard.IsValidKey(newColumn, newRow))
+        Select(newColumn, newRow, addToSelection, false);
+    }
+
+    public void SetRepeat(bool shouldRepeat)
+    {
+      for (int i = 0; i < Keys.Count; i++)
+        if (Keys[i].Selected)
+          Keys[i].SetRepeat(shouldRepeat);
+    }
     public void SetName(string newName)
     {
       for (int i = 0; i < Keys.Count; i++)
@@ -171,7 +169,7 @@ namespace CR_XkeysEngine
       return true;
     }
 
-    public XkeyBase GetKey(int column, int row)
+    public KeyBase GetKey(int column, int row)
     {
       for (int i = 0; i < Keys.Count; i++)
         if (Keys[i].IsAt(column, row))
@@ -185,14 +183,14 @@ namespace CR_XkeysEngine
     /// is drilled into to find and return the actual subkey at the column and 
     /// row.
     /// </summary>
-    XkeyBase GetSingleKey(int column, int row)
+    public KeyBase GetSingleKey(int column, int row)
     {
-      XkeyBase key = GetKey(column, row);
-      XkeyGroup keyGroup = key as XkeyGroup;
+      KeyBase key = GetKey(column, row);
+      KeyGroup keyGroup = key as KeyGroup;
       if (keyGroup == null)
         return key;
 
-      foreach (XkeyBase subkey in keyGroup.Keys)
+      foreach (KeyBase subkey in keyGroup.Keys)
         if (subkey.IsAt(column, row))
           return subkey;
 
@@ -201,7 +199,7 @@ namespace CR_XkeysEngine
 
     public string GetKeyName(int column, int row)
     {
-      XkeyBase key = GetKey(column, row);
+      KeyBase key = GetKey(column, row);
       if (key != null)
         return key.Name;
       else
@@ -210,13 +208,13 @@ namespace CR_XkeysEngine
 
     public bool IsSelected(int column, int row)
     {
-      foreach (XkeyBase key in Keys)
+      foreach (KeyBase key in Keys)
         if (key.IsSelected(column, row))
           return true;
       return false;
     }
 
-    public List<XkeyBase> Keys
+    public List<KeyBase> Keys
     {
       get
       {
@@ -227,37 +225,25 @@ namespace CR_XkeysEngine
     public void Save()
     {
       DecoupledStorage storage = OptXkeysLayout.Storage;
+      storage.ClearAll();
       storage.WriteInt32("Layout", "Count", keys.Count);
       for (int i = 0; i < Keys.Count; i++)
         Keys[i].Save(storage, "Layout", i);
     }
 
-    static void ClearBlockedKeysMask()
+    public void BlockSettingsChanged()
     {
-      for (int column = 0; column < Hardware.Keyboard.NumColumns; column++)
-        XkeysRaw.Data.BlockedKeysMask[column] = 0;
+      Hardware.Keyboard.BlockSettingsChanged(Keys);
     }
 
-    void SetBlockedKeys()
-    {
-      ClearBlockedKeysMask();
-      
-      foreach (XkeyBase key in Keys)
-      {
-        Xkey xkey = key as Xkey;
-        if (xkey != null)
-          if (xkey.IsBlocked)
-            XkeysRaw.Data.BlockedKeysMask[xkey.Column] = (byte)(XkeysRaw.Data.BlockedKeysMask[xkey.Column] + (byte)Math.Pow(2, xkey.Row));
-      }
-    }
     public void Load()
     {
       Keys.Clear();
       DecoupledStorage storage = OptXkeysLayout.Storage;
       int numKeys = storage.ReadInt32("Layout", "Count");
       for (int i = 0; i < numKeys; i++)
-        Keys.Add(XkeyBase.CreateAndLoad(storage, "Layout", i));
-      SetBlockedKeys();
+        Keys.Add(KeyBase.CreateAndLoad(storage, "Layout", i));
+      BlockSettingsChanged();
     }
   }
 }

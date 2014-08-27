@@ -304,8 +304,9 @@
     <Compile Include="HardwareInterface\XkeyPressedEventHandler.cs" />
     <Compile Include="HardwareInterface\CustomKeyboard.cs" />
     <Compile Include="HardwareInterface\XkeysUtils.cs" />
-    <Compile Include="Model\XkeysProfessional58.cs" />
+    <Compile Include="HardwareInterface\XkeysProfessional58.cs" />
     <Compile Include="HardwareInterface\Hardware.cs" />
+    <Compile Include="Model\IKeyGetter.cs" />
     <Compile Include="UI\BindingEditControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -345,10 +346,10 @@
       <DependentUpon>OptXkeysLayout.cs</DependentUpon>
     </Compile>
     <Compile Include="HardwareInterface\SwitchPosition.cs" />
-    <Compile Include="Model\Xkey.cs" />
-    <Compile Include="Model\XkeyBase.cs" />
-    <Compile Include="Model\XkeyGroup.cs" />
-    <Compile Include="Model\XkeyLayout.cs" />
+    <Compile Include="Model\Key.cs" />
+    <Compile Include="Model\KeyBase.cs" />
+    <Compile Include="Model\KeyGroup.cs" />
+    <Compile Include="Model\KeyLayout.cs" />
     <Compile Include="HardwareInterface\XkeysRaw.cs" />
     <Compile Include="HardwareInterface\XkeysDataHandler.cs" />
     <Compile Include="UI\XkeysEditControl.cs">
@@ -367,7 +368,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HardwareInterface\XkeysErrorHandler.cs" />
-    <Compile Include="Model\XKeysGroupType.cs" />
+    <Compile Include="Model\KeyGroupType.cs" />
     <Compile Include="HardwareInterface\XkeysLight.cs" />
     <Compile Include="HardwareInterface\XkeysEngine.cs" />
     <EmbeddedResource Include="UI\BindingEditControl.resx">

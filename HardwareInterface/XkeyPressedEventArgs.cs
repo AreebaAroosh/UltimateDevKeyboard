@@ -6,9 +6,9 @@ namespace CR_XkeysEngine
 {
   public class XkeyPressedEventArgs : EventArgs
   {
-    readonly List<XkeyBase> keysDown = new List<XkeyBase>();
+    readonly List<KeyBase> keysDown = new List<KeyBase>();
 
-    public XkeyPressedEventArgs(List<XkeyBase> keysDown, bool shiftKeyDown, bool ctrlKeyDown, bool altKeyDown, string customData)
+    public XkeyPressedEventArgs(List<KeyBase> keysDown, bool shiftKeyDown, bool ctrlKeyDown, bool altKeyDown, string customData)
     {
       CustomData = customData;
       KeysDown.AddRange(keysDown);
@@ -21,7 +21,7 @@ namespace CR_XkeysEngine
     {
     }
 
-    public List<XkeyBase> KeysDown
+    public List<KeyBase> KeysDown
     {
       get
       {
